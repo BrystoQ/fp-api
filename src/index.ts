@@ -1,40 +1,37 @@
 import express, { Application } from "express";
-import { MongoClient, Db } from "mongodb";
+import session from "express-session";
 import dotenv from "dotenv";
+import { passport } from "./middleware/spotifyAuth";
+import authRoutes from "./routes/auth";
+import { connectToDatabase } from "./db/database";
 
-// Load environment variables
 dotenv.config();
 
-// Create Express app
-const app: any = express();
-const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
-
-let db: Db;
-
-// Connect to MongoDB
-async function connectDB() {
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  db = client.db("dev");
-  console.log("Connected to MongoDB");
-}
+const app: Application = express();
+const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "default_secret_key", // Utilise une clé par défaut si SESSION_SECRET est manquant
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
 
-app.get("/", (req: any, res: any) => {
-  res.send("Hello World");
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use("/auth", authRoutes);
+
+app.get("/", (req, res) => {
+  res.send("API is running");
 });
 
-// Connect to MongoDB and start the server
-connectDB()
+// Connect to the database and start the server
+connectToDatabase()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-    });
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
-  .catch((err) => {
-    console.error("Failed to connect to MongoDB", err);
-  });
-
-export { db, app };
+  .catch((error) => console.error("Failed to connect to MongoDB", error));

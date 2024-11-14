@@ -1,0 +1,3 @@
+**FriendShip Playlist** is a web application that allows users to create, share, and enrich collaborative playlists based on Spotify. Each user can invite friends to contribute directly to their playlists by suggesting tracks, creating an interactive and social musical space.
+
+Users log in with their Spotify accounts to access their existing playlists or create new ones. They can ask musical questions to friends, such as "What song reminds you of our best memories?" to build playlists full of personal significance together. This transforms each playlist into a true shared musical journal, woven with the memories and emotions of each contributor.
